@@ -1,24 +1,35 @@
 import os
+import os
 import sqlite3
 import datetime
 import requests
 import platform
+from pathlib import Path
 
-# ---------- 1. 从环境变量读取 Token（本地需设置环境变量，云端通过 Secrets 注入） ----------
+# ---------- 1. 切换到脚本所在目录 ----------
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+# ---------- 2. 读取环境变量（本地用 .env，云端用 Secrets） ----------
 PUSHPLUS_TOKEN = os.getenv("PUSHPLUS_TOKEN")
 
-# ---------- 2. 桌面弹窗（仅 Windows 可用） ----------
+# 如果本地没有环境变量，尝试从 .env 文件加载（仅本地开发用）
+if not PUSHPLUS_TOKEN:
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+        PUSHPLUS_TOKEN = os.getenv("PUSHPLUS_TOKEN")
+    except ImportError:
+        pass  # 云端没有 dotenv 也没关系
+
+# ---------- 3. 初始化弹窗（仅 Windows） ----------
 if platform.system() == "Windows":
     try:
         from win10toast import ToastNotifier
         toaster = ToastNotifier()
-        print("✅ 桌面弹窗已启用 (Windows)")
     except ImportError:
         toaster = None
-        print("⚠️ win10toast 未安装，桌面弹窗不可用")
 else:
     toaster = None
-    print(f"ℹ️ 当前系统为 {platform.system()}，桌面弹窗已禁用")
 
 # ---------- 3. 手机推送函数 ----------
 def send_pushplus(title, message):
