@@ -31,7 +31,7 @@ jobs:
 
       - name: 提交更新后的数据库
         # 从 v5 更新到 v6
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "自动更新数据库（已提醒标记）"
           file_pattern: tasks.db
