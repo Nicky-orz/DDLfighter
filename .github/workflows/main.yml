@@ -2,13 +2,13 @@ name: 每日DDL提醒
 
 on:
   schedule:
-    - cron: '50 23,5 * * *'   # ← 改成这个：北京时间 7:50 和 13:50
+    - cron: '0 1,13 * * *'
   workflow_dispatch:
 
 jobs:
   remind:
-    permissions:           # 已配置写入权限
-      contents: write
+    permissions:           # ← 加这三行
+      contents: write      # ← 
     runs-on: ubuntu-latest
     
     steps:
@@ -29,7 +29,7 @@ jobs:
           PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
         run: python check_remind.py
         
-      - name: 提交更新后的数据库
+      - name: 提交更新后的数据库    # ← 你准备恢复的这一段
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "自动更新数据库（已提醒标记）"
